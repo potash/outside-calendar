@@ -5,29 +5,73 @@
 <link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 <script src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
 <script src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
-<script src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/gcal.js'></script>
+<script src='gcal.js'></script>
 <script>
 
 	$(document).ready(function() {
+		sources = [
+				{
+				 url: 'http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
+				 color: 'purple'
+				},
+				{
+				 url:'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
+				 color: 'green'
+			    },
+				{
+				 url:'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
+				 color:'blue'
+			    },
+			 	{
+				 url:'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
+				 color:'red'
+			    }
+		];
+
+		var loaded = false;
+		function initSidebar() {
+				sources.forEach(function(s) {
+				console.log(s.title);
+				$("<input/>", {type:"checkbox", checked:true}).click(function() {
+					if($(this).is(":checked")) {
+						console.log(s.title);
+						$('#calendar').fullCalendar('addEventSource', s);
+					} else {
+						console.log("unchecked");
+						$('#calendar').fullCalendar('removeEventSource', s);
+					}
+				})
+				.appendTo("#sourceForm");
+				$("#sourceForm").append(s.title + "<br/>");
+			});
+		}
 	
 		$('#calendar').fullCalendar({
-		
-			events: 'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
-			
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek'
+			},
+			height: 500,
+			editable: false,
+			eventSources: sources,
 			eventClick: function(event) {
 				// opens events in a popup window
 				window.open(event.url, 'gcalevent', 'width=700,height=600');
 				return false;
 			},
-			
 			loading: function(bool) {
 				if (bool) {
+					// TODO: make loading div more visible
 					$('#loading').show();
-				}else{
+				} else {
 					$('#loading').hide();
+					if (!loaded) {
+						initSidebar();
+					}
+					loaded = true;
 				}
 			}
-			
 		});
 		
 	});
@@ -40,7 +84,9 @@
 		text-align: center;
 		font-size: 14px;
 		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-		}
+	}
+
+	#sidebar { text-align: left; float: left; width: 200px; background: #EBEBEB; padding: 15px 10px 15px 20px; } 
 		
 	#loading {
 		position: absolute;
@@ -49,14 +95,31 @@
 		}
 
 	#calendar {
-		width: 900px;
+		width: 600px;
 		margin: 0 auto;
-		}
+	}
+
+	/* month view events are single line */
+	.fc-grid .fc-event-title {
+		padding: 0 1px;
+		white-space: nowrap;
+	}
+
+	/* remove gap between controls and header in presence of sidear */
+	.fc-content {
+		clear: right;
+	}
 
 </style>
 </head>
 <body>
-<div id='loading' style='display:none'>loading...</div>
-<div id='calendar'></div>
+	<div id='sidebar'>
+		<form id='sourceForm'>
+			<h3>Sources</h3>
+		</form>
+	</div>
+	<div id='loading' style='display:none'>loading...</div>
+	<div id='calendar'></div>
+</div>
 </body>
 </html>
