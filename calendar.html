@@ -30,7 +30,8 @@
 
 		var loaded = false;
 		function initSidebar() {
-				sources.forEach(function(s) {
+			var sourceForm = $("#sourceForm");
+			sources.forEach(function(s) {
 				console.log(s.title);
 				$("<input/>", {type:"checkbox", checked:true}).click(function() {
 					if($(this).is(":checked")) {
@@ -41,8 +42,9 @@
 						$('#calendar').fullCalendar('removeEventSource', s);
 					}
 				})
-				.appendTo("#sourceForm");
-				$("#sourceForm").append(s.title + "<br/>");
+				.appendTo(sourceForm);
+				$("<font></font>").text(s.title).css("background-color", s.color).css("color", "white").appendTo(sourceForm);
+				sourceForm.append("<br/>");
 			});
 		}
 	
