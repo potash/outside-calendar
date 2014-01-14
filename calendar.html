@@ -7,8 +7,53 @@
 <script src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
 <script src='gcal.js'></script>
 <script>
+	var filterKeyword = "";
+
+	function contains(s, t) {
+		return s && s.toUpperCase().indexOf(t.toUpperCase()) >= 0;
+	}
+
+	var renderEvent = function(event, element, view) {
+		if (event.source.filtered) {
+			return false;
+		}
+
+		if (!(contains(event.title, filterKeyword) ||
+				contains(event.description, filterKeyword))) {
+			return false;
+		}
+	}
 
 	$(document).ready(function() {
+		var calendar = $("#calendar");
+
+			
+		// jquery donetyping event a la http://stackoverflow.com/questions/14042193
+		;(function($){
+				$.fn.extend({
+					donetyping: function(callback,timeout){
+						timeout = timeout || 1e3; // 1 second default timeout
+						var timeoutReference,
+							doneTyping = function(el){
+								if (!timeoutReference) return;
+								timeoutReference = null;
+								callback.call(el);
+							};
+						return this.each(function(i,el){
+							var $el = $(el);
+							$el.is(':input') && $el.keypress(function(){
+								if (timeoutReference) clearTimeout(timeoutReference);
+								timeoutReference = setTimeout(function(){
+									doneTyping(el);
+								}, timeout);
+							}).blur(function(){
+								doneTyping(el);
+							});
+						});
+					}
+				});
+			})(jQuery);
+
 		sources = [
 				{
 				 url: 'http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
@@ -32,12 +77,7 @@
 			    }
 			];
 
-		var renderEvent = function(event, element, view) {
-			if (event.source.filtered) {
-				return false;
-			}
-		}
-
+		
 		var loaded = false;
 
 		function initSidebar() {
@@ -61,7 +101,7 @@
 				sourceForm.append("<br/>");
 			});
 		}
-	
+
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'prev,next today',
@@ -90,6 +130,11 @@
 			},
 			eventRender: renderEvent
 		});
+
+		$('#keyword').donetyping(function(e) {
+			filterKeyword = this.value;
+			calendar.fullCalendar("rerenderEvents");
+		}, 500);
 		
 	});
 
@@ -103,7 +148,7 @@
 		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
 	}
 
-	#sidebar { text-align: left; float: left; width: 200px; background: #EBEBEB; padding: 15px 10px 15px 20px; } 
+	#sidebar { text-align: left; float: left; width: 280px; background: #EBEBEB; padding: 15px 10px 15px 20px; } 
 		
 	#loading {
 		position: absolute;
@@ -134,6 +179,8 @@
 		<form id='sourceForm'>
 			<h3>Sources</h3>
 		</form>
+			<h3>Keyword</h3>
+			<input id="keyword" type="text" value=""></input>
 	</div>
 	<div id='loading' style='display:none'>loading...</div>
 	<div id='calendar'></div>
