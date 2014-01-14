@@ -25,22 +25,36 @@
 			 	{
 				 url:'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
 				 color:'red'
+			 	},
+				{
+				 url: 'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic',
+				 color: 'orange'
 			    }
-		];
+			];
+
+		var renderEvent = function(event, element, view) {
+			if (event.source.filtered) {
+				return false;
+			}
+		}
 
 		var loaded = false;
+
 		function initSidebar() {
 			var sourceForm = $("#sourceForm");
+			var calendar = $("#calendar");
+
 			sources.forEach(function(s) {
 				console.log(s.title);
 				$("<input/>", {type:"checkbox", checked:true}).click(function() {
 					if($(this).is(":checked")) {
 						console.log(s.title);
-						$('#calendar').fullCalendar('addEventSource', s);
+						s.filtered = false;	
 					} else {
 						console.log("unchecked");
-						$('#calendar').fullCalendar('removeEventSource', s);
+						s.filtered = true;
 					}
+					calendar.fullCalendar("rerenderEvents");
 				})
 				.appendTo(sourceForm);
 				$("<font></font>").text(s.title).css("background-color", s.color).css("color", "white").appendTo(sourceForm);
@@ -73,7 +87,8 @@
 					}
 					loaded = true;
 				}
-			}
+			},
+			eventRender: renderEvent
 		});
 		
 	});
