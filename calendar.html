@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
+
 <link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.css' rel='stylesheet' />
 <link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-<script src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
-<script src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
-<script src='gcal.js'></script>
+<script type="text/javascript" src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
+
+
+<link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.css"  />
+<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.js'></script>
+<script type="text/javascript" src='gcal.js'></script>
+
+<link type="text/css" rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.1/leaflet.css" />
+<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.4.1/leaflet.js"></script>
+
+<link rel="stylesheet" href="leaflet.awesome-markers.css">
+<script type="text/javascript" src="leaflet.awesome-markers.js"></script>
+
 <script>
 	var filterKeyword = "";
+	var map;
 
 	function contains(s, t) {
 		return s && s.toUpperCase().indexOf(t.toUpperCase()) >= 0;
@@ -15,13 +28,41 @@
 
 	var renderEvent = function(event, element, view) {
 		if (event.source.filtered) {
-			return false;
+			return hideEvent(event);
 		}
 
 		if (!(contains(event.title, filterKeyword) ||
 				contains(event.description, filterKeyword))) {
-			return false;
+			return hideEvent(event);
 		}
+
+		if (event.location != null && event.location.length > 0) {
+			if (event.marker == null) {
+				$.getJSON('https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + event.location,
+					function(data) {
+						if (data.results.length > 0) {
+							event.marker = L.marker([data.results[0].geometry.location.lat, data.results[0].geometry.location.lng],
+							{icon: new L.icon({iconUrl: "http://cdn.leafletjs.com/leaflet-0.7.1/images/marker-icon.png", iconSize: 12})
+							});
+							event.marker.addTo(map);
+						} else {
+						}
+					});
+			} else {
+				event.marker.addTo(map);
+			}
+		}
+	}
+
+	function hideEvent(event) {
+		if (event.marker) {
+			map.removeLayer(event.marker);
+		}
+		return false;
+	}
+
+	function getLocation(address, callback) {
+		$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + address, function(data) {  });
 	}
 
 	$(document).ready(function() {
@@ -63,7 +104,7 @@
 				 url:'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
 				 color: 'green'
 			    },
-				{
+				/*{
 				 url:'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
 				 color:'blue'
 			    },
@@ -72,9 +113,9 @@
 				 color:'red'
 			 	},
 				{
-				 url: 'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic',
+				 url:'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic',
 				 color: 'orange'
-			    }
+			    }*/
 			];
 
 		
@@ -102,6 +143,30 @@
 			});
 		}
 
+		var tooltip = $("#calendar").qtip({
+				id: 'fullcalendar',
+				prerender: true,
+				content: {
+					text: ' ',
+					title: {
+						button: true
+					}
+				},
+				position: {
+					my: 'bottom center',
+					at: 'top center',
+					target: 'mouse',
+					viewport: $('#calendar'),
+					adjust: {
+						mouse: false,
+						scroll: false
+					}
+				},
+				show: false,
+				hide: false,
+				style: 'qtip-light'
+			}).qtip('api');
+
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'prev,next today',
@@ -111,11 +176,6 @@
 			height: 500,
 			editable: false,
 			eventSources: sources,
-			eventClick: function(event) {
-				// opens events in a popup window
-				window.open(event.url, 'gcalevent', 'width=700,height=600');
-				return false;
-			},
 			loading: function(bool) {
 				if (bool) {
 					// TODO: make loading div more visible
@@ -128,15 +188,39 @@
 					loaded = true;
 				}
 			},
-			eventRender: renderEvent
+			eventRender: renderEvent,
+			eventClick: function(data, event, view) {
+				var content = '<h3>'+data.title+'</h3>' + 
+					'<p><b>Start:</b> '+data.start+'<br />' + 
+						data.description + 
+						(data.end && '<p><b>End:</b> '+data.end+'</p>' || '');
+
+					tooltip.set({
+						'content.text': content
+					})
+					.reposition(event).show(event);
+					return false; // disable opening event url
+				},
 		});
 
 		$('#keyword').donetyping(function(e) {
 			filterKeyword = this.value;
 			calendar.fullCalendar("rerenderEvents");
 		}, 500);
-		
+
+		initMap("map");
 	});
+
+	function initMap(selector) {
+		var chicago = new L.LatLng(41.878247, -87.629767);
+		map = new L.Map(selector);
+		map.setView(chicago, 10);
+
+		var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    	var osmAttrib='Map data &copy; OpenStreetMap contributors';
+    	var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
+    	map.addLayer(osm);
+	}
 
 </script>
 <style>
@@ -148,7 +232,7 @@
 		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
 	}
 
-	#sidebar { text-align: left; float: left; width: 280px; background: #EBEBEB; padding: 15px 10px 15px 20px; } 
+	#sidebar { text-align: left; float: left; width: 360px; background: #EBEBEB; padding: 15px 20px 15px 20px; margin-right: 5px} 
 		
 	#loading {
 		position: absolute;
@@ -172,6 +256,15 @@
 		clear: right;
 	}
 
+ 	#map {
+		position:relative;
+		margin-top: 20px;
+        float:left;
+		width:360px;
+		height:300px;
+		border:1px dashed black;
+	}
+
 </style>
 </head>
 <body>
@@ -181,6 +274,8 @@
 		</form>
 			<h3>Keyword</h3>
 			<input id="keyword" type="text" value=""></input>
+		<br/>
+		<div id="map"></div>
 	</div>
 	<div id='loading' style='display:none'>loading...</div>
 	<div id='calendar'></div>
