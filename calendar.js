@@ -1,6 +1,7 @@
 var filterKeyword = "";
-locations = {};
+var locations = {};
 var map;
+var tooltip;
 
 // case insensitive substring check
 function contains(s, t) {
@@ -26,15 +27,16 @@ var renderEvent = function(event, element, view) {
 function showMarker(location) {
 	if (locations[location] == null) {
 		locations[location] = {};
-		$.getJSON('https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + location + ' near Chicago, IL',
+		$.getJSON('https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + location,
 			function(data) {
-				var m = locations[location];
-				m.location = location;
+				var l = locations[location];
+				l.location = location;
 
 				if (data.results.length > 0) {
-					m.marker = L.marker([data.results[0].geometry.location.lat, data.results[0].geometry.location.lng]);
-					m.marker.bindPopup(location);
-					m.marker.addTo(map);
+					l.latLng = L.latLng(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng);
+					l.marker = L.marker(l.latLng);
+					l.marker.bindPopup(location);
+					l.marker.addTo(map);
 				} else {
 					console.warn("No results for location: " + location);
 				}
@@ -142,7 +144,7 @@ function initCalendar(selector) {
 		});
 	}
 
-	var tooltip = $("#calendar").qtip({
+	tooltip = $("#calendar").qtip({
 			id: 'fullcalendar',
 			prerender: true,
 			content: {
@@ -188,7 +190,10 @@ function initCalendar(selector) {
 			}
 		},
 		eventRender: renderEvent,
-		viewRender: hideMarkers,
+		viewRender: function() {
+			tooltip.hide();
+			hideMarkers();
+		},
 		eventClick: function(data, event, view) {
 			var content = '<h3>'+data.title+'</h3>' + 
 				'<p><b>Start:</b> '+data.start+'<br />' + 
@@ -197,14 +202,21 @@ function initCalendar(selector) {
 
 				tooltip.set({
 					'content.text': content
-				})
-				.reposition(event).show(event);
+				}).reposition(event).show(event);
+
+				// if its on the map, open the pop up
+				if (data.location && locations[data.location].latLng) {
+					map.panTo(locations[data.location].latLng);
+					locations[data.location].marker.openPopup();
+				}
+
 				return false; // disable opening event url
 			},
 	});
 
 	$('#keyword').donetyping(function(e) {
 		filterKeyword = this.value;
+		hideMarkers();
 		calendar.fullCalendar("rerenderEvents");
 	}, 500);
 
