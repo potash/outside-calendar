@@ -19,13 +19,14 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		mapDisabled = true; // used for debugging to prevent excess geocoding
 		initCalendar("#calendar");
 	});
 </script>
 <style>
 
 	body {
-		margin-top: 40px;
+		margin-top: 10px;
 		text-align: center;
 		font-size: 14px;
 		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
@@ -64,24 +65,45 @@
 
  	#map {
 		position:relative;
-		margin-top: 20px;
+		/*margin-top: 20px;*/
         float:left;
 		width:360px;
 		height:300px;
 		border:1px dashed black;
 	}
 
+	.sidebarSection {
+		margin-bottom: 10px;
+	}
+
+	.help {
+		border: 1px dashed black
+	}
+
 </style>
 </head>
 <body>
 	<div id='sidebar'>
-		<form id='sourceForm'>
-			<h3>Sources</h3>
-		</form>
-			<h3>Keyword</h3>
+		<div id='sourceForm' class='sidebarSection'>
+			<b><big>Sources</b></big><sup><a href="#" title="Select which calendars to view.">?</a></sup><br/>
+		</div>
+
+		<div class='sidebarSection' title="Enter a word or phrase to search event titles and descriptions.">
+		<label>
+			<b><big>Keyword</big></b><sup><a href="#">?</a></sup>
 			<input id="keyword" type="text" value=""></input>
-		<br/>
-		<div id="map"></div>
+		</label>
+		</div>
+
+		<div id='tagForm' class='sidebarSection'>
+			<b><big>Tags</big></b><sup><a href="#" title="Select tags to filter to. If no tags are selected then all events are shown.">?</a></sup> 
+			<a href="#" id="clearTags">No Tags</a> <a href="#" id="selectAllTags">All Tags</a> <br/>
+		</div>
+		<div id="mapDiv" class=sidebarSection>
+			<b><big>Map</big></b><sup><a href="#" title="Clicking on a marker filters to events at that marker's location">?</a></sup> 
+			<div id="map">
+			</div>
+		</div>
 	</div>
 	<div id='loading' style='display:none'>loading...</div>
 	<div id='calendar'></div>

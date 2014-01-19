@@ -1,11 +1,84 @@
 var filterKeyword = "";
-var locations = {};
-var map;
 var tooltip;
+
+// map stuff
+var map;
+var activeLocation;
+var defaultLatLng = new L.LatLng(41.878247, -87.629767); // Chicago
+var defaultZoom = 9;
+var locations = {};
+
+// tagging
+var tags;
+var filteredTags;
+var hashtagRegex = /\#\w+/g;
+
+// DOM elements
+var calendar;
+var tagCheckboxes;
+var tagDiv;
 
 // case insensitive substring check
 function contains(s, t) {
 	return s && s.toUpperCase().indexOf(t.toUpperCase()) >= 0;
+}
+
+// tags is a boolean-valued hashmap that encodes tags
+function addTags(str, tags) {
+	var matches = str.match(hashtagRegex);
+	if (matches) {
+		for (var i = 0; i < matches.length; i++) {
+			tags[matches[i].substring(1)] = true;
+		}
+	}
+}
+
+// collect distinct tags from events and refresh sidebar controls
+function refreshTags() {
+	if (tagDiv) {
+		tagDiv.remove();
+	}
+	tags = {};
+	filteredTags = {};
+	tagCheckboxes = [];
+
+	var events = calendar.fullCalendar("clientEvents");
+	for (var i = 0; i < events.length; i++) {
+		var event = events[i];
+		if (event.tags == null) {
+			event.tags = {};
+			addTags(event.title, event.tags);
+			addTags(event.description, event.tags);
+
+			for (tag in event.tags) {
+				tags[tag] = true;
+			}
+		}
+	}
+
+	var tagForm = $("#tagForm");
+	tagDiv = $("<div>");
+	var sortedTags = Object.keys(tags).sort(); // get sorted array from map
+	sortedTags.forEach(function(tag) {
+		var label = $("<label>");
+		var nobr = $("<nobr>"); // don't break line between checkbox and label
+		var checkbox = $("<input>", {type:"checkbox", checked:false, class: "tagCheckbox"}).click(function() {
+			if($(this).is(":checked")) {
+				filteredTags[tag] = true;
+			} else {
+				filteredTags[tag] = false;
+			}
+			calendar.fullCalendar("rerenderEvents");
+		}).appendTo(nobr);
+		nobr.append(tag);
+
+		nobr.appendTo(label);
+		label.appendTo(tagDiv);
+		$("<text>").text(" ").appendTo(tagDiv); // empty text to allow line breaks
+	});
+	tagDiv.appendTo(tagForm);
+
+	tagCheckboxes = $(".tagCheckbox");
 }
 
 // render events, including hiding them and managing map markers
@@ -18,8 +91,26 @@ var renderEvent = function(event, element, view) {
 		return hideEvent(event);
 	}
 
-	if (event.location != null && event.location.length > 0) {
-		showMarker(event.location);
+	var tagged = null;
+	for (tag in filteredTags) {
+		if (filteredTags[tag]) {
+			if (tagged == null) {
+				tagged = false;
+			}
+			if (event.tags && event.tags[tag]) {
+				tagged = true;
+				break;
+			}
+		}
+	}
+	if (tagged == false) {
+		return hideEvent(event);
+	}
+
+
+	if (mapDisabled) {
+	} else if (event.location != null && event.location.length > 0) {
+			showMarker(event.location);
 	}
 }
 
@@ -27,18 +118,18 @@ var renderEvent = function(event, element, view) {
 function showMarker(location) {
 	if (locations[location] == null) {
 		locations[location] = {};
-		$.getJSON('https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + location,
+		$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + location,
 			function(data) {
 				var l = locations[location];
 				l.location = location;
 
-				if (data.results.length > 0) {
-					l.latLng = L.latLng(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng);
+				if (data.length > 0) {
+					l.latLng = L.latLng(data[0].lat, data[0].lon);
 					l.marker = L.marker(l.latLng);
 					l.marker.bindPopup(location);
 					l.marker.addTo(map);
 				} else {
-					console.warn("No results for location: " + location);
+					console.warn("No geocoding results for address: " + location);
 				}
 			});
 	} else {
@@ -94,13 +185,12 @@ function getLocation(address, callback) {
 })(jQuery);
 
 function initCalendar(selector) {
-	var calendar = $(selector);
+	calendar = $(selector);
 		
-	
 	sources = [
 			{
-				url: 'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
-				color: 'purple'
+			 url: 'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
+			 color: 'purple'
 			},
 			{
 			 url:'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
@@ -125,21 +215,19 @@ function initCalendar(selector) {
 
 	function initSidebar() {
 		var sourceForm = $("#sourceForm");
-		var calendar = $("#calendar");
 
 		sources.forEach(function(s) {
-			$("<input/>", {type:"checkbox", checked:true}).click(function() {
+			var label = $("<label/>");
+			label.append($("<input/>", {type:"checkbox", checked:true}).click(function() {
 				if($(this).is(":checked")) {
-					console.log(s.title);
 					s.filtered = false;	
 				} else {
-					console.log("unchecked");
 					s.filtered = true;
 				}
 				calendar.fullCalendar("rerenderEvents");
-			})
-			.appendTo(sourceForm);
-			$("<font></font>").text(s.title).css("background-color", s.color).css("color", "white").appendTo(sourceForm);
+			}));
+			label.append($("<font></font>").text(s.title).css("background-color", s.color).css("color", "white"));
+			sourceForm.append(label);
 			sourceForm.append("<br/>");
 		});
 	}
@@ -194,20 +282,30 @@ function initCalendar(selector) {
 			tooltip.hide();
 			hideMarkers();
 		},
+		eventAfterAllRender: refreshTags,
 		eventClick: function(data, event, view) {
 			var content = '<h3>'+data.title+'</h3>' + 
-				'<p><b>Start:</b> '+data.start+'<br />' + 
-					data.description + 
-					(data.end && '<p><b>End:</b> '+data.end+'</p>' || '');
+				'<b>Start:</b> '+data.start+'<br />' + 
+					(data.end && '<b>End:</b> '+data.end || '') + '<br/>' +
+					'<b>Description:</b> ' + data.description;
 
 				tooltip.set({
 					'content.text': content
 				}).reposition(event).show(event);
 
-				// if its on the map, open the pop up
-				if (data.location && locations[data.location].latLng) {
-					map.panTo(locations[data.location].latLng);
-					locations[data.location].marker.openPopup();
+				if (activeLocation && activeLocation.marker) {
+					activeLocation.marker.closePopup();
+				}
+				if (mapDisabled) {
+				} else { 
+					// if its on the map, open the pop up
+					if (data.location && locations[data.location].latLng) {
+						//map.panTo(locations[data.location].latLng);
+						locations[data.location].marker.openPopup();
+						activeLocation = locations[data.location];
+					} else {
+						map.setView(defaultLatLng, defaultZoom);
+					}
 				}
 
 				return false; // disable opening event url
@@ -221,15 +319,26 @@ function initCalendar(selector) {
 	}, 500);
 
 	initMap("map");
+
+	$("#clearTags").click(function() {
+		tagCheckboxes.prop("checked",false)
+		filteredTags = [];
+		calendar.fullCalendar("rerenderEvents");
+	});
+
+	$("#selectAllTags").click(function() {
+		tagCheckboxes.prop("checked",true)
+		filteredTags = tags; 
+		calendar.fullCalendar("rerenderEvents");
+	});
 }
 
 function initMap(selector) {
-	var chicago = new L.LatLng(41.878247, -87.629767);
 	map = new L.Map(selector);
-	map.setView(chicago, 10);
+	map.setView(defaultLatLng, defaultZoom);
 
 	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib='Map data &copy; OpenStreetMap contributors';
-	var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
+	var osm = new L.TileLayer(osmUrl, {minZoom: 7, maxZoom: 12, attribution: osmAttrib});
 	map.addLayer(osm);
 }
