@@ -108,8 +108,7 @@ var renderEvent = function(event, element, view) {
 	}
 
 
-	if (mapDisabled) {
-	} else if (event.location != null && event.location.length > 0) {
+	if (event.location != null && event.location.length > 0) {
 			showMarker(event.location);
 	}
 }
@@ -293,19 +292,18 @@ function initCalendar(selector) {
 					'content.text': content
 				}).reposition(event).show(event);
 
+				// if there's an open popup, close it
 				if (activeLocation && activeLocation.marker) {
 					activeLocation.marker.closePopup();
 				}
-				if (mapDisabled) {
-				} else { 
-					// if its on the map, open the pop up
-					if (data.location && locations[data.location].latLng) {
-						//map.panTo(locations[data.location].latLng);
-						locations[data.location].marker.openPopup();
-						activeLocation = locations[data.location];
-					} else {
-						map.setView(defaultLatLng, defaultZoom);
-					}
+
+				// if its on the map, open the pop up
+				if (data.location && locations[data.location].latLng) {
+					//map.panTo(locations[data.location].latLng);
+					locations[data.location].marker.openPopup();
+					activeLocation = locations[data.location];
+				} else {
+					map.setView(defaultLatLng, defaultZoom);
 				}
 
 				return false; // disable opening event url
