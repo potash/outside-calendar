@@ -12,6 +12,7 @@ var locations = {};
 var tags;
 var filteredTags;
 var hashtagRegex = /\#\w+/g;
+var staleTags;
 
 // DOM elements
 var calendar;
@@ -281,8 +282,14 @@ function initCalendar(selector) {
 		viewRender: function() {
 			tooltip.hide();
 			hideMarkers();
+			staleTags = true;
 		},
-		eventAfterAllRender: refreshTags,
+		eventAfterAllRender: function() {
+			if (staleTags) {
+				refreshTags();
+				staleTags = false;
+			}
+		},
 		eventClick: function(data, event, view) {
 			var content = '<h3>'+data.title+'</h3>' + 
 				'<b>Start:</b> '+data.start+'<br />' + 
