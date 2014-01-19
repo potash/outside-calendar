@@ -223,6 +223,7 @@ function initCalendar(selector) {
 				} else {
 					s.filtered = true;
 				}
+				hideMarkers();
 				calendar.fullCalendar("rerenderEvents");
 			}));
 			label.append($("<font></font>").text(s.title).css("background-color", s.color).css("color", "white"));
