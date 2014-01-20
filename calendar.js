@@ -12,7 +12,7 @@ var locations = {};
 var tags;
 var filteredTags;
 var hashtagRegex = /#\w*[a-z]\w*/gi;
-var staleTags;
+var tagsCleared;
 
 // DOM elements
 var calendar;
@@ -34,29 +34,30 @@ function addTags(str, tags) {
 	}
 }
 
-// collect distinct tags from events and refresh sidebar controls
-function refreshTags() {
+function clearTags() {
 	if (tagDiv) {
 		tagDiv.remove();
 	}
 	tags = {};
 	filteredTags = {};
 	tagCheckboxes = [];
+	tagsCleared = true;
+}
 
-	var events = calendar.fullCalendar("clientEvents");
-	for (var i = 0; i < events.length; i++) {
-		var event = events[i];
-		if (event.tags == null) {
-			event.tags = {};
-			addTags(event.title, event.tags);
-			addTags(event.description, event.tags);
-
-			for (tag in event.tags) {
-				tags[tag] = true;
-			}
-		}
+function tagEvent(event) {
+	if (event.tags == null) {
+		event.tags = {};
+		addTags(event.title, event.tags);
+		addTags(event.description, event.tags);
 	}
+	
+	for (tag in event.tags) {
+		tags[tag] = true;
+	}
+}
 
+// refresh sidebar controls
+function refreshTags() {
 	var tagForm = $("#tagForm");
 	tagDiv = $("<div>");
 	var sortedTags = Object.keys(tags).sort(); // get sorted array from map
@@ -78,8 +79,27 @@ function refreshTags() {
 		$("<text>").text(" ").appendTo(tagDiv); // empty text to allow line breaks
 	});
 	tagDiv.appendTo(tagForm);
-
 	tagCheckboxes = $(".tagCheckbox");
+	tagsCleared = false;
+}
+
+function isTagged(event) {
+	var tagged = null;
+	for (tag in filteredTags) {
+		if (filteredTags[tag]) {
+			if (tagged == null) {
+				tagged = false;
+			}
+			if (event.tags && event.tags[tag]) {
+				return true;
+			}
+		}
+	}
+	if (!tagged) {
+		return false;
+	} else {
+		return true; // tagged = null so filteredTags is empty
+	}
 }
 
 // render events, including hiding them and managing map markers
@@ -92,22 +112,11 @@ var renderEvent = function(event, element, view) {
 		return hideEvent(event);
 	}
 
-	var tagged = null;
-	for (tag in filteredTags) {
-		if (filteredTags[tag]) {
-			if (tagged == null) {
-				tagged = false;
-			}
-			if (event.tags && event.tags[tag]) {
-				tagged = true;
-				break;
-			}
-		}
-	}
-	if (tagged == false) {
+	if (isTagged == false) {
 		return hideEvent(event);
 	}
 
+	tagEvent(event);
 
 	if (event.location != null && event.location.length > 0) {
 			showMarker(event.location);
@@ -283,12 +292,11 @@ function initCalendar(selector) {
 		viewRender: function() {
 			tooltip.hide();
 			hideMarkers();
-			staleTags = true;
+			clearTags();
 		},
 		eventAfterAllRender: function() {
-			if (staleTags) {
+			if (tagsCleared) {
 				refreshTags();
-				staleTags = false;
 			}
 		},
 		eventClick: function(data, event, view) {
