@@ -266,7 +266,7 @@ function initCalendar(selector) {
 		height: 500,
 		editable: false,
 		eventSources: sources,
-		defaultView: agendaWeek,
+		defaultView: "agendaWeek",
 		loading: function(bool) {
 			if (bool) {
 				// TODO: make loading div more visible
