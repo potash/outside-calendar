@@ -11,7 +11,7 @@ var locations = {};
 // tagging
 var tags;
 var filteredTags;
-var hashtagRegex = /\#\w+/g;
+var hashtagRegex = /#\w*[a-z]\w*/gi;
 var staleTags;
 
 // DOM elements
