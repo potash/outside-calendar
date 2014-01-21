@@ -1,3 +1,6 @@
+var eventSources;
+var colors = ['Blue', 'Red', 'Green', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'];
+
 var filterKeyword = "";
 var tooltip;
 
@@ -7,6 +10,7 @@ var activeLocation;
 var defaultLatLng = new L.LatLng(41.878247, -87.629767); // Chicago
 var defaultZoom = 9;
 var locations = {};
+var filterLocation;
 
 // tagging
 var tags;
@@ -86,6 +90,7 @@ function refreshTags() {
 function isTagged(event) {
 	var tagged = null;
 	for (tag in filteredTags) {
+		console.log(tag);
 		if (filteredTags[tag]) {
 			if (tagged == null) {
 				tagged = false;
@@ -95,31 +100,37 @@ function isTagged(event) {
 			}
 		}
 	}
-	if (!tagged) {
-		return false;
+
+	if (tagged == null) {
+		return true;
 	} else {
-		return true; // tagged = null so filteredTags is empty
+		return false; // tagged = null so filteredTags is empty
 	}
 }
 
 // render events, including hiding them and managing map markers
 var renderEvent = function(event, element, view) {
+	var hide = false;
+
 	if (event.source.filtered) {
-		return hideEvent(event);
+		hide = true;
+	} else if (!contains(event.title + event.descriotion, filterKeyword)) {
+		hide = true;
+	} else if (!isTagged(event)) {
+		hide = true;
+	} else if (filterLocation && event.location != filterLocation.name) {
+		hide = true;
 	}
 
-	if (!contains(event.title + event.descriotion, filterKeyword)) {
+	console.log(hide);
+	if (hide) {
 		return hideEvent(event);
-	}
+	} else {
+		tagEvent(event);
 
-	if (isTagged == false) {
-		return hideEvent(event);
-	}
-
-	tagEvent(event);
-
-	if (event.location != null && event.location.length > 0) {
-			showMarker(event.location);
+		if (event.location != null && event.location.length > 0) {
+				showMarker(event.location);
+		}
 	}
 }
 
@@ -130,15 +141,18 @@ function showMarker(location) {
 		$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + location,
 			function(data) {
 				var l = locations[location];
-				l.location = location;
+				l.name = location;
 
 				if (data.length > 0) {
 					l.latLng = L.latLng(data[0].lat, data[0].lon);
 					l.marker = L.marker(l.latLng);
-					l.marker.bindPopup(location);
+					l.marker.bindPopup(l.name);
+					l.marker.on("click", function() {
+						//filterLocation = l;
+					});
 					l.marker.addTo(map);
 				} else {
-					console.warn("No geocoding results for address: " + location);
+					console.warn("No geocoding results for address: " + l.name);
 				}
 			});
 	} else {
@@ -193,39 +207,19 @@ function getLocation(address, callback) {
 	});
 })(jQuery);
 
-function initCalendar(selector) {
-	calendar = $(selector);
+function initCalendar(sources) {
+	calendar = $("#calendar");
 		
-	sources = [
-			{
-			 url: 'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
-			 color: 'purple'
-			},
-			{
-			 url:'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
-			 color: 'green'
-			},
-			{
-			 url:'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
-			 color:'blue'
-			},
-			{
-			 url:'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
-			 color:'red'
-			},
-			{
-			 url:'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic',
-			 color: 'orange'
-			}
-		];
+	var eventSources = sources.map(function(source, i) {
+		return {url: source, color: colors[i % colors.length]};
+	});
 
-	
 	var loaded = false;
 
 	function initSidebar() {
 		var sourceForm = $("#sourceForm");
 
-		sources.forEach(function(s) {
+		eventSources.forEach(function(s) {
 			var label = $("<label/>");
 			label.append($("<input/>", {type:"checkbox", checked:true}).click(function() {
 				if($(this).is(":checked")) {
@@ -272,10 +266,11 @@ function initCalendar(selector) {
 			center: 'title',
 			right: 'month,agendaWeek'
 		},
-		height: 500,
+		//height: 600,
 		editable: false,
-		eventSources: sources,
+		eventSources: eventSources,
 		defaultView: "agendaWeek",
+		slotMinutes: 60,
 		loading: function(bool) {
 			if (bool) {
 				// TODO: make loading div more visible
@@ -320,7 +315,7 @@ function initCalendar(selector) {
 					locations[data.location].marker.openPopup();
 					activeLocation = locations[data.location];
 				} else {
-					map.setView(defaultLatLng, defaultZoom);
+					//map.setView(defaultLatLng, defaultZoom);
 				}
 
 				return false; // disable opening event url
