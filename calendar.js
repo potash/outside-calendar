@@ -302,6 +302,9 @@ function initCalendar(sources, geocoding) {
 				refreshTags();
 			}
 		},
+		dayClick: function() {
+        	tooltip.hide();	
+    	},
 		eventClick: function(data, event, view) {
 			var content = '<h4><a href=\'' + data.url +'\'>'+data.title+'</a></h4>' + 
 				'<h5><b>When:</b> '+ $.fullCalendar.formatDate(data.start, 'ddd MMM d, h:mm TT') + 
