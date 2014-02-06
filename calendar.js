@@ -11,6 +11,7 @@ var defaultLatLng = new L.LatLng(41.878247, -87.629767); // Chicago
 var defaultZoom = 9;
 var locations = {};
 var filterLocation;
+var geocodingEnabled = true;
 
 // tagging
 var tags;
@@ -90,7 +91,6 @@ function refreshTags() {
 function isTagged(event) {
 	var tagged = null;
 	for (tag in filteredTags) {
-		console.log(tag);
 		if (filteredTags[tag]) {
 			if (tagged == null) {
 				tagged = false;
@@ -122,13 +122,12 @@ var renderEvent = function(event, element, view) {
 		hide = true;
 	}
 
-	console.log(hide);
 	if (hide) {
 		return hideEvent(event);
 	} else {
 		tagEvent(event);
 
-		if (event.location != null && event.location.length > 0) {
+		if (event.location != null && event.location.length > 0 && geocodingEnabled) {
 				showMarker(event.location);
 		}
 	}
@@ -207,7 +206,10 @@ function getLocation(address, callback) {
 	});
 })(jQuery);
 
-function initCalendar(sources) {
+function initCalendar(sources, geocoding) {
+	if (geocoding != null) {
+		geocodingEnabled = geocoding;
+	}
 	calendar = $("#calendar");
 		
 	var eventSources = sources.map(function(source, i) {

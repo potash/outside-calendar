@@ -1,119 +1,117 @@
 <!DOCTYPE html>
 <html>
-<head>
-<script src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
+	<head>
+		<script src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
 
-<link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.css' rel='stylesheet' />
-<link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-<script type="text/javascript" src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
+		<link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.css' rel='stylesheet' />
+		<link href='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+		<script type="text/javascript" src='http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js'></script>
 
 
-<link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.css"  />
-<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.js'></script>
-<script type="text/javascript" src='gcal.js'></script>
+		<link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.css"  />
+		<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/basic/jquery.qtip.min.js'></script>
+		<script type="text/javascript" src='gcal.js'></script>
 
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
-<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
-<script type="text/javascript" src="calendar.js"></script>
+		<script type="text/javascript" src="calendar.js"></script>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		//mapDisabled = true; // used for debugging to prevent excess geocoding
-		sources = ['http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
-			 'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
-			 'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
-			 'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
-			 'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
-			 'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic'];
+		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
 
-		initCalendar(sources);
-	});
-</script>
-<style>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				sources = 
+					['http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
+					'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
+					'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
+					'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
+					'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
+					'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic'];
 
-	body {
-		margin-top: 10px;
-		text-align: center;
-		font-size: 14px;
-		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-	}
+					initCalendar(sources, true);
+			});
+		</script>
+		<style>
+			body {
+				margin-top: 10px;
+				text-align: center;
+				/*font-size: 14px;
+				font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;*/
+			}
 
-	#sidebar {
-		text-align: left; 
-		float: left; 
-		width: 360px; 
-		background: #EBEBEB; 
-		padding: 15px 20px 15px 20px;
-		margin-right: 5px
-	} 
-		
-	#loading {
-		position: absolute;
-		top: 5px;
-		right: 5px;
-	}
+			#sidebar {
+				text-align: left; 
+				background: #EBEBEB; 
+			} 
 
-	#calendar {
-		width: 600px;
-		float: left;
-	}
+			#loading {
+				position: absolute;
+				top: 5px;
+				right: 5px;
+			}
 
-	/* month view events are single line */
-	.fc-grid .fc-event-title {
-		padding: 0 1px;
-		white-space: nowrap;
-	}
+			#calendar {
+			}
 
-	/* remove gap between controls and header in presence of sidear */
-	.fc-content {
-		clear: right;
-	}
+			/* month view events are single line */
+			.fc-grid .fc-event-title {
+				padding: 0 1px;
+				white-space: nowrap;
+			}
 
- 	#map {
-		position:relative;
-		/*margin-top: 20px;*/
-        float:left;
-		width:360px;
-		height:300px;
-		border:1px dashed black;
-	}
+			/* remove gap between controls and header in presence of sidear */
+			.fc-content {
+				clear: right;
+			}
 
-	.sidebarSection {
-		margin-bottom: 10px;
-	}
+			#map {
+				/*position:relative;*/
+				/*margin-top: 20px;*/
+				/*float:left;
+				width:360px;*/
+				height:300px;
+				border:1px dashed black;
+			}
 
-	.help {
-		border: 1px dashed black
-	}
+			.sidebarSection {
+				margin-bottom: 10px;
+			}
 
-</style>
-</head>
-<body>
-	<div id='sidebar'>
-		<div id='sourceForm' class='sidebarSection'>
-			<b><big>Sources</b></big><sup><a href="#" title="Select which calendars to view.">?</a></sup><br/>
-		</div>
+			.help {
+				border: 1px dashed black
+			}
 
-		<div class='sidebarSection' title="Enter a word or phrase to search event titles and descriptions.">
-		<label>
-			<b><big>Keyword</big></b><sup><a href="#">?</a></sup>
-			<input id="keyword" type="text" value=""></input>
-		</label>
-		</div>
+			</style>
+		</head>
+		<body>
+		<div class='container'>
+		<div class="row">
+			<div id='sidebar' class="col-xs-12 col-md-4">
+				<div id='sourceForm' class='sidebarSection form-group'>
+					<b><big>Sources</big></b><sup><a href="#" title="Select which calendars to view.">?</a></sup><br/>
+				</div>
 
-		<div id='tagForm' class='sidebarSection'>
-			<b><big>Tags</big></b><sup><a href="#" title="Select tags to filter to. If no tags are selected then all events are shown.">?</a></sup> 
-			<a href="#" id="clearTags">No Tags</a> <a href="#" id="selectAllTags">All Tags</a> <br/>
-		</div>
-		<div id="mapDiv" class=sidebarSection>
-			<b><big>Map</big></b><sup><a href="#" title="Clicking on a marker filters to events at that marker's location">?</a></sup> 
-			<div id="map">
+				<div class='sidebarSection' title="Enter a word or phrase to search event titles and descriptions.">
+					<label>
+						<b><big>Keyword</big></b><sup><a href="#">?</a></sup>
+						<input id="keyword" type="text" value="" />
+					</label>
+				</div>
+
+				<div id='tagForm' class='sidebarSection'>
+					<b><big>Tags</big></b><sup><a href="#" title="Select tags to filter to. If no tags are selected then all events are shown.">?</a></sup> 
+					<a href="#" id="clearTags">No Tags</a> <a href="#" id="selectAllTags">All Tags</a> <br/>
+				</div>
+				<div id="mapDiv" class=sidebarSection>
+					<b><big>Map</big></b><sup><a href="#" title="Clicking on a marker filters to events at that marker's location">?</a></sup> 
+					<div id="map">
+					</div>
+				</div>
 			</div>
+			<div id='calendar' class="col-xs-12 col-md-8"></div>
 		</div>
-	</div>
-	<div id='loading' style='display:none'>loading...</div>
-	<div id='calendar'></div>
-</div>
-</body>
+		</div>
+		<div id='loading' style='display:none'>loading...</div>
+	</body>
 </html>
