@@ -349,6 +349,6 @@ function initMap(selector) {
 
 	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib='Map data &copy; OpenStreetMap contributors';
-	var osm = new L.TileLayer(osmUrl, {minZoom: 7, maxZoom: 12, attribution: osmAttrib});
+	var osm = new L.TileLayer(osmUrl, {minZoom: 7, maxZoom: 19, attribution: osmAttrib});
 	map.addLayer(osm);
 }
