@@ -29,6 +29,12 @@ function contains(s, t) {
 	return s && s.toUpperCase().indexOf(t.toUpperCase()) >= 0;
 }
 
+// http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
+function replaceURLWithHTMLLinks(text) {
+    var exp = /(\b(https?|ftp|file):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]))/ig;
+    return text.replace(exp,"<a href='$1'>$3</a>"); 
+}
+
 // tags is a boolean-valued hashmap that encodes tags
 function addTags(str, tags) {
 	var matches = str.match(hashtagRegex);
@@ -144,7 +150,7 @@ function showMarker(location) {
 
 				if (data.length > 0) {
 					l.latLng = L.latLng(data[0].lat, data[0].lon);
-					l.marker = L.marker(l.latLng);
+					l.marker = L.marker(l.latLng)
 					l.marker.bindPopup(l.name);
 					l.marker.on("click", function() {
 						//filterLocation = l;
@@ -262,7 +268,7 @@ function initCalendar(sources, geocoding) {
 			style: 'qtip-light'
 		}).qtip('api');
 
-	$('#calendar').fullCalendar({
+	calendar.fullCalendar({
 		header: {
 			left: 'prev,next today',
 			center: 'title',
@@ -297,10 +303,12 @@ function initCalendar(sources, geocoding) {
 			}
 		},
 		eventClick: function(data, event, view) {
-			var content = '<h3>'+data.title+'</h3>' + 
-				'<b>Start:</b> '+data.start+'<br />' + 
-					(data.end && '<b>End:</b> '+data.end || '') + '<br/>' +
-					'<b>Description:</b> ' + data.description;
+			var content = '<h4><a href=\'' + data.url +'\'>'+data.title+'</a></h4>' + 
+				'<h5><b>When:</b> '+ $.fullCalendar.formatDate(data.start, 'ddd MMM d, h:mm TT') + 
+					(data.end && ' - '+ $.fullCalendar.formatDate(data.end, 'h:mm TT') || '') + '<br/>' +
+					(data.location && '<b>Where:</b> '+data.location + '<br/>' || '') +
+					'<b>Description:</b> ' + replaceURLWithHTMLLinks(data.description) + '</br></br>'+
+				'</h5>';
 
 				tooltip.set({
 					'content.text': content
@@ -312,7 +320,7 @@ function initCalendar(sources, geocoding) {
 				}
 
 				// if its on the map, open the pop up
-				if (data.location && locations[data.location].latLng) {
+				if (data.location && locations[data.location] && locations[data.location].latLng) {
 					//map.panTo(locations[data.location].latLng);
 					locations[data.location].marker.openPopup();
 					activeLocation = locations[data.location];
