@@ -8,7 +8,7 @@ var tooltip;
 var map;
 var activeLocation;
 var defaultLatLng = new L.LatLng(41.878247, -87.629767); // Chicago
-var defaultZoom = 9;
+var defaultZoom = 8;
 var locations = {};
 var filterLocation;
 var geocodingEnabled = true;
