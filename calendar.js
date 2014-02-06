@@ -272,13 +272,13 @@ function initCalendar(sources, geocoding) {
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,agendaWeek'
+			right: 'month,agendaWeek,agendaDay'
 		},
 		//height: 600,
 		editable: false,
 		eventSources: eventSources,
 		defaultView: "agendaWeek",
-		slotMinutes: 60,
+		slotMinutes: 30,
 		loading: function(bool) {
 			if (bool) {
 				// TODO: make loading div more visible
