@@ -83,7 +83,7 @@ function refreshTags() {
 			}
 			calendar.fullCalendar("rerenderEvents");
 		}).appendTo(nobr);
-		nobr.append(tag);
+		nobr.append(tag.replace('_', ' '));
 
 		nobr.appendTo(label);
 		label.appendTo(tagDiv);
@@ -254,11 +254,12 @@ function initCalendar(sources, geocoding) {
 				}
 			},
 			position: {
-				my: 'bottom center',
+				my: 'left center',
 				at: 'top center',
 				target: 'mouse',
-				viewport: $('#calendar'),
+				viewport: $(window),
 				adjust: {
+					method: 'shift',
 					mouse: false,
 					scroll: false
 				}
