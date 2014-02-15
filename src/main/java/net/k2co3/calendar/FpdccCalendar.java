@@ -23,10 +23,10 @@ public class FpdccCalendar {
 	
 	public static List<Event> getEvents(Date start, Date end) throws MalformedURLException, IOException {
 		List<Event> events = new ArrayList<Event>();
-		DateEnumeration dates = new DateEnumeration(start, end);
-		while (dates.hasMoreElements()) {
+		
+		for (Date date : new DateRange(start, end)) {
 			try {
-				events.addAll(getEvents(dates.nextElement()));
+				events.addAll(getEvents(date));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
