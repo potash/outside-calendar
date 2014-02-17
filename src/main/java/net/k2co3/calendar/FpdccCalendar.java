@@ -21,6 +21,8 @@ public class FpdccCalendar {
 	private static final String dayUrl = "http://ec.volunteernow.com/custom/1405/cal/day_data.php?&start=";
 	private static final String eventUrl = "http://ec.volunteernow.com/custom/1405/cal/ss_data.php";
 	
+	protected static boolean GET_EVENTS = true;
+	
 	public static List<Event> getEvents(Date start, Date end) throws MalformedURLException, IOException {
 		List<Event> events = new ArrayList<Event>();
 		
@@ -63,9 +65,12 @@ public class FpdccCalendar {
 			Element input = div.select("input").first();
 			String guid = input.attr("value");
 			
-			Document ss = Jsoup.connect(eventUrl)
-					.data("guid", guid, "date", date).post();
-			String times = ss.select(".time").text();
+			String times = "12:00 am";
+			if (GET_EVENTS) {
+				Document ss = Jsoup.connect(eventUrl)
+						.data("guid", guid, "date", date).post();
+				times = ss.select(".time").text();
+			}
 			
 			try {
 				setTimes(event, date, times);
