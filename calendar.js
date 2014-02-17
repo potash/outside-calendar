@@ -273,12 +273,12 @@ function initCalendar(sources, geocoding) {
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,agendaWeek,agendaDay'
+			right: 'month,basicWeek,agendaDay'
 		},
 		//height: 600,
 		editable: false,
 		eventSources: eventSources,
-		defaultView: "agendaWeek",
+		defaultView: "basicWeek",
 		slotMinutes: 30,
 		loading: function(bool) {
 			if (bool) {
@@ -308,10 +308,10 @@ function initCalendar(sources, geocoding) {
     	},
 		eventClick: function(data, event, view) {
 			var content = '<h4><a href=\'' + data.url +'\'>'+data.title+'</a></h4>' + 
-				'<h5><b>When:</b> '+ $.fullCalendar.formatDate(data.start, 'ddd MMM d, h:mm TT') + 
+				'<h5><b>When:</b> '+ $.fullCalendar.formatDate(data.start, dateFormatString(data)) + 
 					(data.end && ' - '+ $.fullCalendar.formatDate(data.end, 'h:mm TT') || '') + '<br/>' +
 					(data.location && '<b>Where:</b> '+data.location + '<br/>' || '') +
-					'<b>Description:</b> ' + replaceURLWithHTMLLinks(data.description) + '</br></br>'+
+					(data.description && '<b>Description:</b> ' + replaceURLWithHTMLLinks(data.description) || '') +
 				'</h5>';
 
 				tooltip.set({
@@ -365,4 +365,13 @@ function initMap(selector) {
 	var osmAttrib='Map data &copy; OpenStreetMap contributors';
 	var osm = new L.TileLayer(osmUrl, {minZoom: 7, maxZoom: 19, attribution: osmAttrib});
 	map.addLayer(osm);
+}
+
+// if the event is all day don't include the time in the format
+function dateFormatString(event) {
+	if (event.allDay) {
+	  return 'ddd MMM d';
+	} else {
+	  return 'ddd MMM d, h:mm TT';
+	}
 }
