@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FpdccCalendarTest {
@@ -38,6 +39,7 @@ public class FpdccCalendarTest {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		
 		mapper.writeValue(new File("fpdcc.json"), events);
 	}
