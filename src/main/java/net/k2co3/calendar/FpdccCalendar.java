@@ -20,7 +20,7 @@ public class FpdccCalendar {
 	
 	private static final String dayUrl = "http://ec.volunteernow.com/custom/1405/cal/day_data.php?&start=";
 	private static final String eventUrl = "http://ec.volunteernow.com/custom/1405/cal/ss_data.php";
-	
+	private static final String displayUrl = "https://ec.volunteernow.com/custom/1405/cal/events_by_day.php?d=";
 	protected static boolean GET_EVENTS = true;
 	
 	public static List<Event> getEvents(Date start, Date end) throws MalformedURLException, IOException {
@@ -40,7 +40,11 @@ public class FpdccCalendar {
 	public static List<Event> getEvents(Date date) throws MalformedURLException, IOException {
 		String d = dateFormat.format(date);
 		Document doc = Jsoup.parse(new URL(dayUrl + d), 3000);
-		return getEvents(doc);
+		List<Event> events = getEvents(doc);
+		for (Event event : events) {
+			event.setUrl(displayUrl + d);
+		}
+		return events;
 	}
 	
 	public static List<Event> getEvents(Document doc) throws IOException {

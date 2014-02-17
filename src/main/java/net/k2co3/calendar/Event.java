@@ -8,6 +8,7 @@ public @Data class Event {
 	private String title;
 	private String description;
 	private String location;
+	private String url;
 
 	private Date start;
 	private Date end;
