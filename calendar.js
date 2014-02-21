@@ -1,5 +1,5 @@
 var eventSources;
-var colors = ['Blue', 'Red', 'Green', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'];
+var colors = ['Green', 'Blue', 'Red', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'];
 
 var filterKeyword = "";
 var tooltip;
