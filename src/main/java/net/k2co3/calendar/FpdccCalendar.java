@@ -7,6 +7,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -81,9 +82,9 @@ public class FpdccCalendar {
 				
 				Element div = e.nextElementSibling();
 				
-	//			Element info = div.child(0);
-	//			info.select("span").remove();
-	//			event.setDescription(info.text());
+				Element info = div.child(0);
+				info.select("span").remove();
+				event.setDescription(info.text());
 				
 				Element input = div.select("input").first();
 				String guid = input.attr("value");
@@ -122,13 +123,15 @@ public class FpdccCalendar {
 	}
 	
 	public static void main(String[] args) throws MalformedURLException, IOException {
-		List<Event> events = FpdccCalendar.getEvents(new DateRange(new Date(), 31));
-		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		
+		List<Event> events = FpdccCalendar.getEvents(new DateRange(new Date(), 31));
 		mapper.writeValue(new File("fpdcc.json"), events);
+		
+//		List<Event> events = mapper.readValue(new File("/home/eric/www/fpdcc.json"), 
+//				mapper.getTypeFactory().constructCollectionType(List.class, Event.class));
 	}
 }
