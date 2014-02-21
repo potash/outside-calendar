@@ -21,15 +21,8 @@
 
 		<script type="text/javascript">
 			$(document).ready(function() {
-				sources = 
-					['http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic',
-					'https://www.google.com/calendar/feeds/habitat2030%40gmail.com/public/basic',
-					'https://www.google.com/calendar/feeds/vi7emldooebjk83viv63mmac74%40group.calendar.google.com/public/basic',
-					'https://www.google.com/calendar/feeds/qulevcs6r5qv1t6ooie2f9dhu8%40group.calendar.google.com/public/basic',
-					'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
-					'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic'];
-
-					initCalendar(sources, true, true);
+				sources = ['http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic', 'fpdcc.json'];
+				initCalendar(sources, true);
 			});
 		</script>
 		<style>
@@ -73,7 +66,7 @@
 				/*margin-top: 20px;*/
 				/*float:left;
 				width:360px;*/
-				height:300px;
+				height:500px;
 				border:1px dashed black;
 			}
 
@@ -91,10 +84,7 @@
 		<div class='container'>
 		<div class="row">
 			<div id='sidebar' class="col-xs-12 col-md-4">
-				<div id='sourceForm' class='sidebarSection form-group'>
-					<b><big>Sources</big></b><sup><a href="#" title="Select which calendars to view.">?</a></sup><br/>
-				</div>
-
+				<br/>
 				<div class='sidebarSection' title="Enter a word or phrase to search event titles and descriptions.">
 					<label>
 						<b><big>Keyword</big></b><sup><a href="#">?</a></sup>
@@ -102,10 +92,7 @@
 					</label>
 				</div>
 
-				<div id='tagForm' class='sidebarSection'>
-					<b><big>Tags</big></b><sup><a href="#" title="Select tags to filter to. If no tags are selected then all events are shown.">?</a></sup> 
-					<a href="#" id="clearTags">No Tags</a> <a href="#" id="selectAllTags">All Tags</a> <br/>
-				</div>
+				
 				<div id="mapDiv" class=sidebarSection>
 					<b><big>Map</big></b><sup><a href="#" title="Clicking on a marker filters to events at that marker's location">?</a></sup> 
 					<div id="map">

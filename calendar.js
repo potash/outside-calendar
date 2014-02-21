@@ -59,7 +59,8 @@ function tagEvent(event) {
 	if (event.tags == null) {
 		event.tags = {};
 		addTags(event.title, event.tags);
-		addTags(event.description, event.tags);
+		if (event.description)
+			addTags(event.description, event.tags);
 	}
 	
 	for (tag in event.tags) {
@@ -212,7 +213,7 @@ function getLocation(address, callback) {
 	});
 })(jQuery);
 
-function initCalendar(sources, geocoding) {
+function initCalendar(sources, geocoding, sourceForm) {
 	if (geocoding != null) {
 		geocodingEnabled = geocoding;
 	}
@@ -228,7 +229,7 @@ function initCalendar(sources, geocoding) {
 
 	var loaded = false;
 
-	function initSidebar() {
+	function initSourceForm() {
 		var sourceForm = $("#sourceForm");
 
 		eventSources.forEach(function(s) {
@@ -277,7 +278,7 @@ function initCalendar(sources, geocoding) {
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,basicWeek,agendaDay'
+			right: 'month,basicWeek,basicDay'
 		},
 		//height: 600,
 		editable: false,
@@ -290,8 +291,8 @@ function initCalendar(sources, geocoding) {
 				$('#loading').show();
 			} else {
 				$('#loading').hide();
-				if (!loaded) {
-					initSidebar();
+				if (!loaded && sourceForm) {
+					initSourceForm();
 				}
 				loaded = true;
 			}
