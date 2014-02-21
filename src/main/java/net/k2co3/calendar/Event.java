@@ -12,4 +12,5 @@ public @Data class Event {
 
 	private Date start;
 	private Date end;
+	private Boolean allDay;
 }

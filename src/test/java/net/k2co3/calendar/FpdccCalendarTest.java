@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -19,7 +20,7 @@ public class FpdccCalendarTest {
 
 	@Test
 	public void testGetEventsRange() throws IOException, ParseException {
-		FpdccCalendar.getEvents(FpdccCalendar.dateFormat.parse("2013-12-25"), FpdccCalendar.dateFormat.parse("2014-1-10"));
+		FpdccCalendar.getEvents(new DateRange(new Date(), 1));
 	}
 	
 	@Test

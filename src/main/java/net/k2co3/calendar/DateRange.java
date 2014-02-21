@@ -11,10 +11,6 @@ public class DateRange implements Iterable<Date> {
 		private Date next, end;
 		
 		DateIterator(Date start, Date end) {
-			if (start.compareTo(end) > 0) {
-				throw new IllegalArgumentException("End date must occur after start");
-			}
-			
 			calendar = Calendar.getInstance();
 			calendar.setTime(start);
 			next = calendar.getTime();
@@ -42,6 +38,14 @@ public class DateRange implements Iterable<Date> {
 	
 	public DateRange(Date start, Date end) {
 		iterator = new DateIterator(start, end);
+	}
+	
+	// total number of days
+	public DateRange(Date start, int numDays) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(start);
+		calendar.add(Calendar.DATE,  numDays-1);
+		iterator = new DateIterator(start, calendar.getTime());
 	}
 
 	public Iterator<Date> iterator() {
