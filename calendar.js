@@ -219,7 +219,11 @@ function initCalendar(sources, geocoding) {
 	calendar = $("#calendar");
 		
 	var eventSources = sources.map(function(source, i) {
-		return {url: source, color: colors[i % colors.length]};
+		if (typeof source == 'string') {
+			return {url: source, color: colors[i % colors.length]};
+		} else {
+			return source;
+		}
 	});
 
 	var loaded = false;
