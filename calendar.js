@@ -333,7 +333,7 @@ function initCalendar(userOptions) {
 					//map.setView(defaultLatLng, defaultZoom);
 				}
 
-				return false; // disable opening event url
+				event.preventDefault(); // disable opening event url
 			},
 	});
 	if (options.keywordInput) {
