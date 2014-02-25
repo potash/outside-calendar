@@ -1,5 +1,4 @@
 var eventSources;
-var colors = ['Green', 'Blue', 'Red', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'];
 
 var filterKeyword = "";
 var tooltip;
@@ -7,11 +6,17 @@ var tooltip;
 // map stuff
 var map;
 var activeLocation;
-var defaultLatLng = new L.LatLng(41.878247, -87.629767); // Chicago
-var defaultZoom = 8;
 var locations = {};
 var filterLocation;
-var geocodingEnabled = true;
+
+var options = {};
+
+var defaultOptions =
+	{ mapCenter : new L.LatLng(41.878247, -87.629767),
+	  mapZoom : 8,
+	  geocodingEnabled : true,
+	  sourceFormDiv : null,
+	  colors : ['Green', 'Blue', 'Red', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'] };
 
 // tagging
 var tags;
@@ -35,7 +40,7 @@ function replaceURLWithHTMLLinks(text) {
     return text.replace(exp,"<a href='$1'>$3</a>"); 
 }
 
-// tags is a boolean-valued hashmap that encodes tags
+// tags is a set (actually boolean-valued map, but the value is irrelevant) of tags
 function addTags(str, tags) {
 	var matches = str.match(hashtagRegex);
 	if (matches) {
@@ -45,9 +50,10 @@ function addTags(str, tags) {
 	}
 }
 
+// remove tags list and clean up
 function clearTags() {
-	if (tagDiv) {
-		tagDiv.remove();
+	if (options.tagDiv) {
+		options.tagDiv.remove();
 	}
 	tags = {};
 	filteredTags = {};
@@ -55,6 +61,8 @@ function clearTags() {
 	tagsCleared = true;
 }
 
+// parse the events tags from title and description
+// add them to the global collection
 function tagEvent(event) {
 	if (event.tags == null) {
 		event.tags = {};
@@ -68,9 +76,12 @@ function tagEvent(event) {
 	}
 }
 
-// refresh sidebar controls
+// refresh sidebar tags
 function refreshTags() {
-	var tagForm = $("#tagForm");
+	if (options.tagForm == null) {
+		return;
+	}
+
 	tagDiv = $("<div>");
 	var sortedTags = Object.keys(tags).sort(); // get sorted array from map
 	sortedTags.forEach(function(tag) {
@@ -90,7 +101,7 @@ function refreshTags() {
 		label.appendTo(tagDiv);
 		$("<text>").text(" ").appendTo(tagDiv); // empty text to allow line breaks
 	});
-	tagDiv.appendTo(tagForm);
+	tagDiv.appendTo(options.tagForm);
 	tagCheckboxes = $(".tagCheckbox");
 	tagsCleared = false;
 }
@@ -134,7 +145,7 @@ var renderEvent = function(event, element, view) {
 	} else {
 		tagEvent(event);
 
-		if (event.location != null && event.location.length > 0 && geocodingEnabled) {
+		if (event.location != null && event.location.length > 0 && options.geocodingEnabled) {
 				showMarker(event.location);
 		}
 	}
@@ -213,15 +224,14 @@ function getLocation(address, callback) {
 	});
 })(jQuery);
 
-function initCalendar(sources, geocoding, sourceForm) {
-	if (geocoding != null) {
-		geocodingEnabled = geocoding;
-	}
-	calendar = $("#calendar");
+function initCalendar(userOptions) {
+	$.extend(options, defaultOptions, userOptions);
+
+	calendar = options.calendar;
 		
 	var eventSources = sources.map(function(source, i) {
 		if (typeof source == 'string') {
-			return {url: source, color: colors[i % colors.length]};
+			return {url: source, color: options.colors[i % options.colors.length]};
 		} else {
 			return source;
 		}
@@ -230,7 +240,7 @@ function initCalendar(sources, geocoding, sourceForm) {
 	var loaded = false;
 
 	function initSourceForm() {
-		var sourceForm = $("#sourceForm");
+		var sourceForm = options.sourceForm;
 
 		eventSources.forEach(function(s) {
 			var label = $("<label/>");
@@ -249,7 +259,7 @@ function initCalendar(sources, geocoding, sourceForm) {
 		});
 	}
 
-	tooltip = $("#calendar").qtip({
+	tooltip = calendar.qtip({
 			id: 'fullcalendar',
 			prerender: true,
 			content: {
@@ -288,10 +298,10 @@ function initCalendar(sources, geocoding, sourceForm) {
 		loading: function(bool) {
 			if (bool) {
 				// TODO: make loading div more visible
-				$('#loading').show();
+				options.loading && options.loading.show();
 			} else {
-				$('#loading').hide();
-				if (!loaded && sourceForm) {
+				options.loading && options.loading.hide();
+				if (!loaded && options.sourceForm) {
 					initSourceForm();
 				}
 				loaded = true;
@@ -340,31 +350,36 @@ function initCalendar(sources, geocoding, sourceForm) {
 				return false; // disable opening event url
 			},
 	});
-
-	$('#keyword').donetyping(function(e) {
-		filterKeyword = this.value;
-		hideMarkers();
-		calendar.fullCalendar("rerenderEvents");
-	}, 500);
+	if (options.keywordInput) {
+		options.keywordInput.donetyping(function(e) {
+			filterKeyword = this.value;
+			hideMarkers();
+			calendar.fullCalendar("rerenderEvents");
+		}, 500);
+	}
 
 	initMap("map");
 
-	$("#clearTags").click(function() {
-		tagCheckboxes.prop("checked",false)
-		filteredTags = [];
-		calendar.fullCalendar("rerenderEvents");
-	});
+	if (options.noTags) {
+		options.noTags.click(function() {
+			tagCheckboxes.prop("checked",false)
+			filteredTags = [];
+			calendar.fullCalendar("rerenderEvents");
+		});
+	}
 
-	$("#selectAllTags").click(function() {
-		tagCheckboxes.prop("checked",true)
-		filteredTags = tags; 
-		calendar.fullCalendar("rerenderEvents");
-	});
+	if (options.allTags) {
+		options.allTags.click(function() {
+			tagCheckboxes.prop("checked",true)
+			filteredTags = tags; 
+			calendar.fullCalendar("rerenderEvents");
+		});
+	}
 }
 
 function initMap(selector) {
 	map = new L.Map(selector);
-	map.setView(defaultLatLng, defaultZoom);
+	map.setView(options.mapCenter, options.mapZoom);
 
 	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib='Map data &copy; OpenStreetMap contributors';

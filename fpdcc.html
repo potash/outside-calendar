@@ -21,8 +21,12 @@
 
 		<script type="text/javascript">
 			$(document).ready(function() {
-				sources = ['http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic', 'fpdcc.json'];
-				initCalendar(sources, true);
+				sources = ['fpdcc.json', 'http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic'];
+				initCalendar({
+						calendar: $("#calendar"),
+						keywordInput : $("#keyword"), 
+						sources : sources,
+						geocodingEnabled: true});
 			});
 		</script>
 		<style>

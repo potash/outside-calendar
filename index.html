@@ -29,7 +29,16 @@
 					'https://www.google.com/calendar/feeds/c3mk91p1452cdm9umg24oaeeo4%40group.calendar.google.com/public/basic',
 					'https://www.google.com/calendar/feeds/fermilabnaturalareas%40gmail.com/public/basic'];
 
-					initCalendar(sources, true, true);
+					initCalendar({
+						calendar: $("#calendar"),
+						keywordInput : $("#keyword"), 
+						sourceForm: $("#sourceForm"),
+						noTags: $("#noTags"),
+						allTags: $("#allTags"),
+						tagForm: $("#tagForm"),
+						loading: $("#loading"),
+						sources : sources,
+						geocodingEnabled: false});
 			});
 		</script>
 		<style>
@@ -104,7 +113,7 @@
 
 				<div id='tagForm' class='sidebarSection'>
 					<b><big>Tags</big></b><sup><a href="#" title="Select tags to filter to. If no tags are selected then all events are shown.">?</a></sup> 
-					<a href="#" id="clearTags">No Tags</a> <a href="#" id="selectAllTags">All Tags</a> <br/>
+					<a href="#" id="noTags">No Tags</a> <a href="#" id="allTags">All Tags</a> <br/>
 				</div>
 				<div id="mapDiv" class=sidebarSection>
 					<b><big>Map</big></b><sup><a href="#" title="Clicking on a marker filters to events at that marker's location">?</a></sup> 
