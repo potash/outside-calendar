@@ -1,0 +1,123 @@
+[
+	{
+		"regex": "Chicago Botanic Garden",
+		"name": "Chicago Botanic Garden"
+	}, {
+		"regex": "Camp Reinberg",
+		"name": "Camp Reinberg"
+	}, {
+		"regex": "Deer Grove Forest Preserve - West",
+		"name": "Deer Grove Forest Preserve - West"
+	}, {
+		"regex": "Eggers Grove",
+		"name": "Eggers Grove"
+	}, {
+		"regex": "Harms Flatwoods",
+		"name": "Harms Flatwoods"
+	}, {
+		"regex": "Harms Woods",
+		"name": "Harms Woods"
+	}, {
+		"regex": "Hidden Pong Woods",
+		"name": "Hidden Pong Woods"
+	}, {
+		"regex": "Indian Road Woods",
+		"name": "Indian Road Woods"
+	}, {
+		"regex": "Kickapoo Woods",
+		"name": "Kickapoo Woods"
+	}, {
+		"regex": "Kloempken Prairie",
+		"name": "Kloempken Prairie"
+	}, {
+		"regex": "Linne Woods",
+		"name": "Linne Woods"
+	}, {
+		"regex": "Little Red Schoolhouse Nature Center",
+		"name": "Little Red Schoolhouse Nature Center"
+	}, {
+		"regex": "McCormick Woods",
+		"name": "McCormick Woods"
+	}, {
+		"regex": "Miami Woods Forest Preserve",
+		"name": "Miami Woods Forest Preserve"
+	}, {
+		"regex": "Orland Grassland",
+		"name": "Orland Grassland"
+	}, {
+		"regex": "Shoe Factory Road Woods",
+		"name": "Shoe Factory Road Woods"
+	}, {
+		"regex": "Schaumburg Road Grasslands",
+		"name": "Schaumburg Road Grasslands"
+	}, {
+		"regex": "Burnham Woods",
+		"name": "Burnham Woods"
+	}, {
+		"regex": "Salt Creek Woods",
+		"name": "Salt Creek Woods"
+	}, {
+		"regex": "Sauganash Prairie Grove",
+		"name": "Sauganash Prairie Grove"
+	}, {
+		"regex": "Somme Prairie Grove",
+		"name": "Somme Prairie Grove"
+	}, {
+		"regex": "Somme Woods",
+		"name": "Somme Woods"
+	}, {
+		"regex": "Spears Woods",
+		"name": "Spears Woods"
+	}, {
+		"regex": "Theodore Stone Forest",
+		"name": "Theodore Stone Forest"
+	}, {
+		"regex": "Watersmeet Woods",
+		"name": "Watersmeet Woods"
+	}, {
+		"regex": "Arie Crown Forest",
+		"name": "Arie Crown Forest"
+	}, {
+		"regex": "Beaubien Woods",
+		"name": "Beaubien Woods"
+	}, {
+		"regex": "Bemis Woods South",
+		"name": "Bemis Woods South"
+	}, {
+		"regex": "Black Partridge Woods Nature Preserve",
+		"name": "Black Partridge Woods Nature Preserve"
+	}, {
+		"regex": "Bluff Spring Fen Nature Preserve",
+		"name": "Bluff Spring Fen Nature Preserve"
+	}, {
+		"regex": "Sidney Yates Flatwoods",
+		"name": "Sidney Yates Flatwoods"
+	}, {
+		"regex": "Busse Woods",
+		"name": "Busse Woods"
+	}, {
+		"regex": "Cap Sauers Holdings Nature Preserve",
+		"name": "Cap Sauers Holdings Nature Preserve"
+	}, {
+		"regex": "Chicago Portage Woods",
+		"name": "Chicago Portage Woods"
+	}, {
+		"regex": "Cranberry Slouth Nature Preserve",
+		"name": "Cranberry Slouth Nature Preserve"
+	}, {
+		"regex": "Dan Ryan Woods",
+		"name": "Dan Ryan Woods"
+	}, {
+		"regex": "Wold Road Prairie Nature Preserve",
+		"name": "Wold Road Prairie Nature Preserve"
+	}, {
+		"regex": "Wolf Road Prairie Nature Preserve",
+		"name": "Wolf Road Prairie Nature Preserve"
+	}, {
+		"regex": "Cranberry South Nature Preserve",
+		"name": "Cranberry South Nature Preserve"
+	}, {
+		"regex": "Hidden Pond Woods",
+		"name": "Hidden Pond Woods"
+	}
+]

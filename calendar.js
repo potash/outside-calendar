@@ -6,7 +6,6 @@ var tooltip;
 // map stuff
 var map;
 var activeLocation;
-var locations = {};
 var filterLocation;
 
 var options = {};
@@ -16,7 +15,9 @@ var defaultOptions =
 	  mapZoom : 8,
 	  geocodingEnabled : true,
 	  sourceFormDiv : null,
-	  colors : ['Green', 'Blue', 'Red', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'] };
+	  colors : ['Green', 'Blue', 'Red', 'Magenta', 'Brown', 'Orange', 'Purple', 'Gray'],
+	  locations : [],
+	  eventLocations: [] };
 
 // tagging
 var tags;
@@ -144,16 +145,12 @@ var renderEvent = function(event, element, view) {
 		return hideEvent(event);
 	} else {
 		tagEvent(event);
-
-		if (event.location != null && event.location.length > 0 && options.geocodingEnabled) {
-				showMarker(event.location);
-		}
+		showMarker(event.location);
 	}
 }
 
-// show a marker at the given location
-function showMarker(location) {
-	if (locations[location] == null) {
+function getLocationAndShowMarker(location) {
+	if (options.geocodingEnabled) {
 		locations[location] = {};
 		$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + location,
 			function(data) {
@@ -161,17 +158,21 @@ function showMarker(location) {
 				l.name = location;
 
 				if (data.length > 0) {
-					l.latLng = L.latLng(data[0].lat, data[0].lon);
-					l.marker = L.marker(l.latLng)
-					l.marker.bindPopup(l.name);
-					l.marker.on("click", function() {
-						//filterLocation = l;
-					});
+					l.coords = [data[0].lat, data[0].lon];
+					initMarker(l);
 					l.marker.addTo(map);
 				} else {
 					console.warn("No geocoding results for address: " + l.name);
 				}
 			});
+	}
+}
+
+// show a marker at the given location
+function showMarker(location) {
+	if (location == null || location.length == 0) {
+	} else if (locations[location] == null) {
+		getLocationAndShowMarker(location);
 	} else {
 		if (locations[location].marker != null) {
 			locations[location].marker.addTo(map);
@@ -195,9 +196,6 @@ function hideEvent(event) {
 	return false;
 }
 
-function getLocation(address, callback) {
-	$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + address, function(data) {  });
-}
 // jquery donetyping event a la http://stackoverflow.com/questions/14042193
 ;(function($){
 	$.fn.extend({
@@ -229,7 +227,7 @@ function initCalendar(userOptions) {
 
 	calendar = options.calendar;
 		
-	var eventSources = sources.map(function(source, i) {
+	eventSources = sources.map(function(source, i) {
 		if (typeof source == 'string') {
 			return {url: source, color: options.colors[i % options.colors.length]};
 		} else {
@@ -239,25 +237,12 @@ function initCalendar(userOptions) {
 
 	var loaded = false;
 
-	function initSourceForm() {
-		var sourceForm = options.sourceForm;
-
-		eventSources.forEach(function(s) {
-			var label = $("<label/>");
-			label.append($("<input/>", {type:"checkbox", checked:true}).click(function() {
-				if($(this).is(":checked")) {
-					s.filtered = false;	
-				} else {
-					s.filtered = true;
-				}
-				hideMarkers();
-				calendar.fullCalendar("rerenderEvents");
-			}));
-			label.append($("<font></font>").text(s.title).css("background-color", s.color).css("color", "white"));
-			sourceForm.append(label);
-			sourceForm.append("<br/>");
-		});
-	}
+	initMap("map");
+	locations = {};
+	options.locations.forEach( function(g) { 
+		locations[g.name] = g; 
+		initMarker(g);
+	} );
 
 	tooltip = calendar.qtip({
 			id: 'fullcalendar',
@@ -293,6 +278,7 @@ function initCalendar(userOptions) {
 		//height: 600,
 		editable: false,
 		eventSources: eventSources,
+		eventDataTransform: locationTransform,
 		defaultView: "basicWeek",
 		slotMinutes: 30,
 		loading: function(bool) {
@@ -339,7 +325,7 @@ function initCalendar(userOptions) {
 				}
 
 				// if its on the map, open the pop up
-				if (data.location && locations[data.location] && locations[data.location].latLng) {
+				if (data.location && locations[data.location] && locations[data.location].marker) {
 					//map.panTo(locations[data.location].latLng);
 					locations[data.location].marker.openPopup();
 					activeLocation = locations[data.location];
@@ -357,8 +343,6 @@ function initCalendar(userOptions) {
 			calendar.fullCalendar("rerenderEvents");
 		}, 500);
 	}
-
-	initMap("map");
 
 	if (options.noTags) {
 		options.noTags.click(function() {
@@ -387,6 +371,26 @@ function initMap(selector) {
 	map.addLayer(osm);
 }
 
+function initSourceForm() {
+	var sourceForm = options.sourceForm;
+
+	eventSources.forEach(function(s) {
+		var label = $("<label/>");
+		label.append($("<input/>", {type:"checkbox", checked:true}).click(function() {
+			if($(this).is(":checked")) {
+				s.filtered = false;	
+			} else {
+				s.filtered = true;
+			}
+			hideMarkers();
+			calendar.fullCalendar("rerenderEvents");
+		}));
+		label.append($("<font></font>").text(s.title).css("background-color", s.color).css("color", "white"));
+		sourceForm.append(label);
+		sourceForm.append("<br/>");
+	});
+}
+
 // if the event is all day don't include the time in the format
 function dateFormatString(event) {
 	if (event.allDay) {
@@ -394,4 +398,22 @@ function dateFormatString(event) {
 	} else {
 	  return 'ddd MMM d, h:mm TT';
 	}
+}
+
+function initMarker(l) {
+	l.marker = L.marker(l.coords);
+	l.marker.bindPopup(l.name);
+	l.marker.on("click", function() {
+		//filterLocation = l;
+	});
+}
+
+function locationTransform(event) {
+	for(var i = 0; i < options.eventLocations.length; i++) {
+		if ( event.title.match(options.eventLocations[i].regex) != null) {
+			event.location = options.eventLocations[i].name;
+			return event;
+		}
+	}
+	return event;
 }

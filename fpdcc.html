@@ -16,17 +16,28 @@
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
 		<script type="text/javascript" src="calendar.js"></script>
+		<script type="text/javascript" src="locations.json"></script>
+		<script type="text/javascript" src="eventLocations.json"></script>
 
 		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
 
 		<script type="text/javascript">
 			$(document).ready(function() {
 				sources = ['fpdcc.json', 'http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic'];
-				initCalendar({
-						calendar: $("#calendar"),
-						keywordInput : $("#keyword"), 
-						sources : sources,
-						geocodingEnabled: true});
+				$.getJSON("locations.json").done(function(locations) { 
+					$.getJSON('eventLocations.json').done(function(eventLocations) { 
+						initCalendar({
+							calendar: $("#calendar"),
+							keywordInput : $("#keyword"), 
+							sources : sources,
+							geocodingEnabled: true,
+							locations: locations,
+							eventLocations: eventLocations,
+							mapZoom: 9
+						});
+					});
+				
+				});	
 			});
 		</script>
 		<style>

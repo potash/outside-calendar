@@ -1,0 +1,119 @@
+[
+	{
+		"name": "Chicago Botanic Garden",
+		"coords": ["42.145174", "-87.7887028609061"]
+	}, {
+		"name": "Camp Reinberg",
+		"coords": ["42.14253525", "-88.0614877487931"]
+	}, {
+		"name": "Deer Grove Forest Preserve - West",
+		"coords": ["42.1433123", "-88.0675178"]
+	}, {
+		"name": "Eggers Grove",
+		"coords": ["41.6862788", "-87.5277612218701"]
+	}, {
+		"name": "Harms Flatwoods",
+		"coords": ["42.0590974", "-87.7646255862757"]
+	}, {
+		"name": "Harms Woods",
+		"coords": ["42.0603506", "-87.7723982996714"]
+	}, {
+		"name": "Hidden Pong Woods"
+	}, {
+		"name": "Indian Road Woods",
+		"coords": ["41.9886066", "-87.763837"]
+	}, {
+		"name": "Kickapoo Woods",
+		"coords": ["41.63322265", "-87.6488678188149"]
+	}, {
+		"name": "Kloempken Prairie",
+		"coords": ["42.06076795", "-87.8749242893587"]
+	}, {
+		"name": "Linne Woods",
+		"coords": ["42.04629885", "-87.7853516068232"]
+	}, {
+		"name": "Little Red Schoolhouse Nature Center",
+		"coords": ["41.7090416", "-87.8772190207355"]
+	}, {
+		"name": "McCormick Woods",
+		"coords": ["41.8389592", "-87.8331150070102"]
+	}, {
+		"name": "Miami Woods Forest Preserve",
+		"coords": ["42.03364895", "-87.7960730812063"]
+	}, {
+		"name": "Orland Grassland",
+		"coords": ["41.57565865", "-87.8616455219292"]
+	}, {
+		"name": "Shoe Factory Road Woods",
+		"coords": ["42.05291625", "-88.20847952957"]
+	}, {
+		"name": "Schaumburg Road Grasslands",
+		"coords": ["42.0310646", "-88.214174"]
+	}, {
+		"name": "Burnham Woods",
+		"coords": ["39.2084395", "-77.1619258"]
+	}, {
+		"name": "Salt Creek Woods",
+		"coords": ["41.82685525", "-87.8924493020123"]
+	}, {
+		"name": "Sauganash Prairie Grove",
+		"coords": ["41.98014615", "-87.7423429763602"]
+	}, {
+		"name": "Somme Prairie Grove",
+		"coords": ["42.1413673", "-87.8313215326508"]
+	}, {
+		"name": "Somme Woods",
+		"coords": ["42.1399247", "-87.8179686365068"]
+	}, {
+		"name": "Spears Woods",
+		"coords": ["41.7257536", "-87.8549904"]
+	}, {
+		"name": "Theodore Stone Forest",
+		"coords": ["41.7723522", "-87.8630159784627"]
+	}, {
+		"name": "Watersmeet Woods",
+		"coords": ["42.0870421", "-87.773767068691"]
+	}, {
+		"name": "Arie Crown Forest",
+		"coords": ["41.76842485", "-87.8725076747559"]
+	}, {
+		"name": "Beaubien Woods",
+		"coords": ["41.64867715", "-87.5842596684437"]
+	}, {
+		"name": "Bemis Woods South",
+		"coords": ["41.82330895", "-87.9091495456015"]
+	}, {
+		"name": "Black Partridge Woods Nature Preserve",
+		"coords": ["41.6831977", "-88.0246014344197"]
+	}, {
+		"name": "Bluff Spring Fen Nature Preserve",
+		"coords": ["42.01213505", "-88.2516283866477"]
+	}, {
+		"name": "Sidney Yates Flatwoods",
+		"coords": ["41.9999776", "-87.7765887"]
+	}, {
+		"name": "Busse Woods",
+		"coords": ["42.01979265", "-88.0100704823195"]
+	}, {
+		"name": "Cap Sauers Holdings Nature Preserve",
+		"coords": ["41.6794763", "-87.8942228"]
+	}, {
+		"name": "Chicago Portage Woods",
+		"coords": ["41.80476795", "-87.8055642215236"]
+	}, {
+		"name": "Cranberry Slouth Nature Preserve"
+	}, {
+		"name": "Dan Ryan Woods",
+		"coords": ["41.7368845", "-87.6781338292668"]
+	}, {
+		"name": "Wold Road Prairie Nature Preserve"
+	}, {
+		"name": "Wolf Road Prairie Nature Preserve",
+		"coords": ["41.83719485", "-87.9033417957948"]
+	}, {
+		"name": "Cranberry South Nature Preserve"
+	}, {
+		"name": "Hidden Pond Woods",
+		"coords": ["41.7237693", "-87.8493837"]
+	}
+]
