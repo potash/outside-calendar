@@ -142,7 +142,7 @@ var renderEvent = function(event, element, view) {
 	}
 
 	if (hide) {
-		return hideEvent(event);
+		hideEvent(event);
 	} else {
 		tagEvent(event);
 		showMarker(event.location);
@@ -193,7 +193,6 @@ function hideEvent(event) {
 	if (event.marker) {
 		map.removeLayer(event.marker);
 	}
-	return false;
 }
 
 // jquery donetyping event a la http://stackoverflow.com/questions/14042193
