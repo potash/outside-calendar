@@ -409,11 +409,23 @@ function initMarker(l) {
 }
 
 function locationTransform(event) {
+	// look for regex matches from eventLocations
 	for(var i = 0; i < options.eventLocations.length; i++) {
 		if ( event.title.match(options.eventLocations[i].regex) != null) {
 			event.location = options.eventLocations[i].name;
 			return event;
 		}
 	}
+	
+	// look for substring matches of location names in event title
+	for(var i = 0; i < options.locations.length; i++) {
+		if ( event.title.toLowerCase().indexOf(options.locations[i].name.toLowerCase()) >= 0) {
+			event.location = options.locations[i].name;
+			return event;
+		}
+	}
+	
+	console.warn("No location for event: " + event.title);
+	
 	return event;
 }
